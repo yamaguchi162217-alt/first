@@ -83,8 +83,16 @@ class GameEngine {
       btnSound: document.getElementById('btn-sound'),
       iconSoundOn: document.getElementById('icon-sound-on'),
       iconSoundOff: document.getElementById('icon-sound-off'),
-      btnPause: document.getElementById('btn-pause')
+      btnPause: document.getElementById('btn-pause'),
+      // Commander Yama elements
+      commanderHud: document.getElementById('commander-hud'),
+      commanderSpeechBubble: document.getElementById('commander-speech-bubble'),
+      commanderSpeechText: document.getElementById('commander-speech-text'),
+      commanderStateText: document.getElementById('commander-state-text'),
+      debriefText: document.getElementById('debrief-text')
     };
+
+    this.commanderMsgTimer = null;
 
     this.initEventListeners();
     this.initTouchControls();
@@ -96,9 +104,49 @@ class GameEngine {
     requestAnimationFrame((t) => this.gameLoop(t));
   }
 
+  // --- COMMANDER YAMA COMMUNICATIONS ---
+
+  triggerCommanderMessage(message, duration = 3000) {
+    if (!this.dom.commanderSpeechBubble || !this.dom.commanderSpeechText) return;
+    
+    this.dom.commanderSpeechText.innerText = message;
+    this.dom.commanderSpeechBubble.classList.remove('hidden');
+    if (this.dom.commanderStateText) {
+      this.dom.commanderStateText.innerText = 'TRANSMITTING';
+      this.dom.commanderStateText.style.color = '#ffb800';
+    }
+
+    if (this.commanderMsgTimer) clearTimeout(this.commanderMsgTimer);
+    this.commanderMsgTimer = setTimeout(() => {
+      if (this.dom.commanderSpeechBubble) {
+        this.dom.commanderSpeechBubble.classList.add('hidden');
+      }
+      if (this.dom.commanderStateText) {
+        this.dom.commanderStateText.innerText = 'ONLINE';
+        this.dom.commanderStateText.style.color = '';
+      }
+    }, duration);
+  }
+
   // --- INITIALIZATION ---
 
   initEventListeners() {
+    // Commander Avatar Click Easter Egg
+    if (this.dom.commanderHud) {
+      const radioLines = [
+        "KEEP FIRING, PILOT! VECTOR DEFENSE IS AT 100%!",
+        "WATCH OUT FOR UFO SIGNALS IN THE UPPER RADAR!",
+        "USE SPECIAL EMP WHEN SWARM CLOSES IN!",
+        "SHIELDS ARE HOLDING, MAINTAIN FORMATION!",
+        "COMBO MULTIPLIER BOOSTS YOUR TOTAL SCORE!",
+        "TACTICAL ADVISOR YAMA READY TO ASSIST!"
+      ];
+      this.dom.commanderHud.addEventListener('click', () => {
+        const line = radioLines[Math.floor(Math.random() * radioLines.length)];
+        this.triggerCommanderMessage(line, 3500);
+      });
+    }
+
     // Keyboard
     window.addEventListener('keydown', (e) => {
       this.audio.ensureContext();
@@ -259,6 +307,7 @@ class GameEngine {
     this.state = 'PLAYING';
     this.audio.startMarch();
     this.updateHUD();
+    this.triggerCommanderMessage("MISSION INITIALIZED! ALL SYSTEMS NOMINAL.", 2500);
   }
 
   initWave(waveNum) {
@@ -323,6 +372,7 @@ class GameEngine {
     this.particles.setWarpSpeed(8.0);
     this.dom.waveBannerTitle.innerText = `SECTOR ${String(this.wave).padStart(2, '0')} CLEARED`;
     this.dom.waveBanner.classList.remove('hidden');
+    this.triggerCommanderMessage(`SECTOR ${String(this.wave).padStart(2, '0')} SECURED! PREPARING WARP...`, 2500);
 
     setTimeout(() => {
       this.dom.waveBanner.classList.add('hidden');
@@ -357,6 +407,19 @@ class GameEngine {
     this.dom.finalCombo.innerText = `x${this.maxCombo.toFixed(1)}`;
     this.dom.finalAccuracy.innerText = `${accuracy}%`;
 
+    // Commander Yama Debriefing Message
+    if (this.dom.debriefText) {
+      if (this.score >= 5000) {
+        this.dom.debriefText.innerText = '"Phenomenal combat rating! You have defended the vector sector with true mastery!"';
+      } else if (this.score >= 2500) {
+        this.dom.debriefText.innerText = '"Outstanding marksmanship, pilot! Your tactical combo timing was top tier."';
+      } else if (this.score >= 1000) {
+        this.dom.debriefText.innerText = '"Good effort, pilot! Make sure to deploy your EMP blast when the swarm gets dense."';
+      } else {
+        this.dom.debriefText.innerText = '"Stay focused, pilot! Use the bunker shields for cover and time your shots carefully."';
+      }
+    }
+
     this.dom.gameoverScreen.classList.remove('hidden');
     this.updateHUD();
   }
@@ -371,6 +434,7 @@ class GameEngine {
     this.audio.playEmpBlast();
     this.particles.createEmpWave(this.player.x + this.player.width / 2, this.player.y);
     this.particles.addShake(15);
+    this.triggerCommanderMessage("EMP OVERDRIVE DISCHARGED!", 2000);
 
     // Destroy all enemy bullets
     for (const b of this.bullets) {
@@ -546,6 +610,7 @@ class GameEngine {
         this.ufo = new UFO(this.canvas.width);
         this.ufoTimer = 0;
         this.audio.startUfoSound();
+        this.triggerCommanderMessage("WARNING: UFO FLAGSHIP DETECTED! INTERCEPT!", 3000);
       }
     } else {
       this.ufo.update();
@@ -634,7 +699,10 @@ class GameEngine {
             this.addCombo();
 
             this.particles.addFloatingText(`UFO +${pts}!`, this.ufo.x + this.ufo.width / 2, this.ufo.y, '#ffb800', 20);
-            this.spawnPowerup(this.ufo.x + this.ufo.width / 2, this.ufo.y + this.ufo.height / 2);
+            this.triggerCommanderMessage("UFO DOWN! EXCELLENT SHOT, PILOT!", 2500);
+            // Guaranteed high powerup drop from UFO
+            this.powerups.push(new PowerUp(this.ufo.x + this.ufo.width / 2, this.ufo.y + this.ufo.height / 2, 'emp'));
+            break;
           }
         }
 

@@ -641,13 +641,266 @@ kbd {
 }
 
 /* ==========================================================================
+   Tactical Commander Yama Hologram & UI Styles
+   ========================================================================== */
+
+/* HUD Commander Item */
+.commander-hud-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 3px 8px 3px 4px;
+  background: rgba(0, 240, 255, 0.06);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.commander-hud-item:hover {
+  background: rgba(0, 240, 255, 0.15);
+  border-color: var(--cyan-primary);
+  box-shadow: 0 0 10px var(--cyan-glow);
+  transform: translateY(-1px);
+}
+
+.commander-avatar-frame {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid var(--cyan-primary);
+  box-shadow: 0 0 8px var(--cyan-glow);
+  background: #09121f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.commander-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  filter: contrast(1.1) brightness(1.05) drop-shadow(0 0 2px var(--cyan-glow));
+}
+
+.holo-scanlines {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    rgba(0, 240, 255, 0.15) 50%, 
+    rgba(0, 0, 0, 0.3) 50%
+  );
+  background-size: 100% 3px;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  animation: scanlines-move 6s linear infinite;
+}
+
+@keyframes scanlines-move {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100%; }
+}
+
+.commander-status-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  background-color: var(--emerald-safe);
+  border-radius: 50%;
+  border: 1.5px solid #070a10;
+  box-shadow: 0 0 6px var(--emerald-glow);
+  animation: pulse-dot 1.5s infinite alternate;
+}
+
+@keyframes pulse-dot {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
+.commander-text-group {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.commander-callsign {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  font-family: var(--font-title);
+}
+
+.commander-state-text {
+  font-size: 0.58rem;
+  font-family: var(--font-mono);
+  color: var(--cyan-primary);
+  letter-spacing: 0.05em;
+}
+
+/* In-game Hologram Speech Bubble */
+.commander-speech-bubble {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  white-space: nowrap;
+  background: rgba(8, 16, 28, 0.95);
+  border: 1px solid var(--cyan-primary);
+  border-radius: 6px;
+  padding: 6px 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 10px var(--cyan-glow);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 50;
+  animation: speechPop 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  pointer-events: none;
+}
+
+.commander-speech-bubble::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 14px;
+  width: 8px;
+  height: 8px;
+  background: rgba(8, 16, 28, 0.95);
+  border-top: 1px solid var(--cyan-primary);
+  border-left: 1px solid var(--cyan-primary);
+  transform: rotate(45deg);
+}
+
+@keyframes speechPop {
+  from { opacity: 0; transform: translateY(-5px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.speech-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--cyan-primary);
+  font-family: var(--font-title);
+}
+
+.speech-text {
+  font-size: 0.75rem;
+  color: #ffffff;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* Title Screen Advisor Pill */
+.title-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.title-advisor-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  padding: 3px 10px 3px 4px;
+  border-radius: 16px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--cyan-primary);
+}
+
+.advisor-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--cyan-primary);
+  object-fit: cover;
+  object-position: top center;
+  background: #09121f;
+}
+
+/* Game Over Debriefing Box */
+.debrief-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(0, 240, 255, 0.05);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 10px;
+  padding: 12px 16px;
+  width: 100%;
+  text-align: left;
+  box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.05);
+}
+
+.debrief-avatar-wrap {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--cyan-primary);
+  box-shadow: 0 0 10px var(--cyan-glow);
+  background: #070d18;
+}
+
+.debrief-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.debrief-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.debrief-sender {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--cyan-primary);
+  font-family: var(--font-title);
+}
+
+.debrief-text {
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--text-main);
+  font-style: italic;
+}
+
+/* ==========================================================================
    Responsive Adaptations
    ========================================================================== */
 @media (max-width: 768px) {
   #hud-bar {
-    padding: 8px 12px;
+    padding: 8px 10px;
+    gap: 8px;
   }
   
+  .commander-text-group {
+    display: none;
+  }
+
+  .commander-hud-item {
+    padding: 2px;
+  }
+
   .hud-value {
     font-size: 0.95rem;
   }
@@ -671,3 +924,4 @@ kbd {
     display: flex;
   }
 }
+

@@ -15,6 +15,24 @@
   <div id="game-wrapper">
     <!-- Top HUD Bar -->
     <header id="hud-bar">
+      <!-- Tactical Commander Yama Avatar HUD -->
+      <div id="commander-hud" class="commander-hud-item" title="TACTICAL COMMANDER: CDR. YAMA (Click to communicate)">
+        <div class="commander-avatar-frame">
+          <img src="image/yama11.png" alt="Commander Yama" class="commander-avatar-img">
+          <div class="holo-scanlines"></div>
+          <span class="commander-status-dot"></span>
+        </div>
+        <div class="commander-text-group">
+          <span class="commander-callsign">CDR. YAMA</span>
+          <span id="commander-state-text" class="commander-state-text">ONLINE</span>
+        </div>
+        <!-- In-game pop-up speech transmission -->
+        <div id="commander-speech-bubble" class="commander-speech-bubble hidden">
+          <span class="speech-tag">HQ &gt;&gt;</span>
+          <span id="commander-speech-text" class="speech-text">ALL SYSTEMS GO!</span>
+        </div>
+      </div>
+
       <div class="hud-group">
         <span class="hud-label">SCORE</span>
         <span id="score-display" class="hud-value font-mono">000000</span>
@@ -80,7 +98,13 @@
       <!-- Start / Title Screen Overlay -->
       <div id="title-screen" class="game-overlay">
         <div class="overlay-card title-card">
-          <div class="cyber-glitch-badge">SYSTEM V2.0 // VECTOR PROTOCOL</div>
+          <div class="title-header-row">
+            <div class="cyber-glitch-badge">SYSTEM V2.0 // VECTOR PROTOCOL</div>
+            <div class="title-advisor-pill" title="Mission Tactical Advisor">
+              <img src="image/yama11.png" alt="Commander Yama" class="advisor-thumb">
+              <span>ADVISOR: CDR. YAMA</span>
+            </div>
+          </div>
           <h1 class="game-title">NEO<span class="highlight">INVADERS</span></h1>
           <p class="subtitle">TACTICAL VECTOR DEFENSE SYSTEM</p>
 
@@ -165,6 +189,18 @@
           </div>
 
           <div id="new-record-banner" class="record-banner hidden">★ NEW HIGH SCORE RECORDED ★</div>
+
+          <!-- Commander Yama Debriefing Box -->
+          <div class="debrief-box">
+            <div class="debrief-avatar-wrap">
+              <img src="image/yama11.png" alt="Commander Yama" class="debrief-avatar">
+              <div class="holo-scanlines"></div>
+            </div>
+            <div class="debrief-content">
+              <span class="debrief-sender">DEBRIEF // CDR. YAMA</span>
+              <p id="debrief-text" class="debrief-text">"Good effort, pilot. Re-calibrate and strike back!"</p>
+            </div>
+          </div>
 
           <button id="btn-retry" class="cyber-btn primary-btn">
             <span class="btn-text">REDEPLOY FIGHTER</span>
