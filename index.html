@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>NEO INVADERS // Vector Protocol</title>
+  <meta name="description" content="洗練されたネオン＆ベクターグラフィックスと重厚なシンセサウンドを備えた、次世代サイバーパンク・インベーダーゲーム">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-wrapper">
+    <!-- Top HUD Bar -->
+    <header id="hud-bar">
+      <div class="hud-group">
+        <span class="hud-label">SCORE</span>
+        <span id="score-display" class="hud-value font-mono">000000</span>
+      </div>
+
+      <div class="hud-group">
+        <span class="hud-label">COMBO</span>
+        <div class="combo-container">
+          <span id="combo-display" class="hud-value combo-text">x1.0</span>
+          <div class="combo-bar-bg">
+            <div id="combo-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hud-group">
+        <span class="hud-label">WAVE</span>
+        <span id="wave-display" class="hud-value">01</span>
+      </div>
+
+      <div class="hud-group">
+        <span class="hud-label">HIGH SCORE</span>
+        <span id="high-score-display" class="hud-value font-mono">000000</span>
+      </div>
+
+      <div class="hud-group hud-lives-group">
+        <span class="hud-label">SHIPS</span>
+        <div id="lives-icons" class="lives-container">
+          <!-- Dynamically populated ship icons -->
+        </div>
+      </div>
+
+      <div class="hud-actions">
+        <button id="btn-sound" class="icon-button" aria-label="Toggle Sound" title="サウンド切替 (M)">
+          <svg id="icon-sound-on" viewBox="0 0 24 24" width="20" height="20">
+            <path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+          </svg>
+          <svg id="icon-sound-off" class="hidden" viewBox="0 0 24 24" width="20" height="20">
+            <path fill="currentColor" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27l4.73 4.73H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+          </svg>
+        </button>
+        <button id="btn-pause" class="icon-button" aria-label="Pause Game" title="一時停止 (ESC/P)">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Canvas Area -->
+    <div id="canvas-container">
+      <canvas id="game-canvas" width="800" height="900"></canvas>
+
+      <!-- Special Weapon Indicator Overlay -->
+      <div id="special-weapon-hud">
+        <div class="special-meter-label">OVERCHARGE [EMP / BEAM]</div>
+        <div class="special-meter-track">
+          <div id="special-meter-fill"></div>
+        </div>
+        <span id="special-hint" class="special-hint-text">CHARGE TO 100%</span>
+      </div>
+
+      <!-- Start / Title Screen Overlay -->
+      <div id="title-screen" class="game-overlay">
+        <div class="overlay-card title-card">
+          <div class="cyber-glitch-badge">SYSTEM V2.0 // VECTOR PROTOCOL</div>
+          <h1 class="game-title">NEO<span class="highlight">INVADERS</span></h1>
+          <p class="subtitle">TACTICAL VECTOR DEFENSE SYSTEM</p>
+
+          <div class="enemy-table">
+            <div class="enemy-row">
+              <canvas id="preview-alien-1" width="36" height="36"></canvas>
+              <span>OCTO SCOUT</span>
+              <span class="pts font-mono">+10 PTS</span>
+            </div>
+            <div class="enemy-row">
+              <canvas id="preview-alien-2" width="36" height="36"></canvas>
+              <span>CRAB STRIKER</span>
+              <span class="pts font-mono">+20 PTS</span>
+            </div>
+            <div class="enemy-row">
+              <canvas id="preview-alien-3" width="36" height="36"></canvas>
+              <span>SQUID OVERLORD</span>
+              <span class="pts font-mono">+30 PTS</span>
+            </div>
+            <div class="enemy-row mystery-row">
+              <canvas id="preview-ufo" width="48" height="30"></canvas>
+              <span>COMMAND UFO</span>
+              <span class="pts font-mono highlight-gold">??? PTS</span>
+            </div>
+          </div>
+
+          <div class="powerup-info-grid">
+            <div class="powerup-badge"><span class="badge-dot cyan"></span> 3-WAY PLASMA</div>
+            <div class="powerup-badge"><span class="badge-dot gold"></span> RAPID LASER</div>
+            <div class="powerup-badge"><span class="badge-dot green"></span> SHIELD REPAIR</div>
+            <div class="powerup-badge"><span class="badge-dot red"></span> EMP OVERCHARGE</div>
+          </div>
+
+          <div class="controls-guide">
+            <div class="ctrl-item"><kbd>◀</kbd> <kbd>▶</kbd> or <kbd>A</kbd> <kbd>D</kbd> <span>移動</span></div>
+            <div class="ctrl-item"><kbd>SPACE</kbd> or <kbd>J</kbd> <span>ショット</span></div>
+            <div class="ctrl-item"><kbd>X</kbd> or <kbd>K</kbd> <span>特殊兵装 EMP</span></div>
+            <div class="ctrl-item"><kbd>P</kbd> or <kbd>ESC</kbd> <span>ポーズ</span></div>
+          </div>
+
+          <button id="btn-start" class="cyber-btn primary-btn">
+            <span class="btn-text">INITIALIZE MISSION</span>
+            <span class="btn-glow"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Pause Menu Overlay -->
+      <div id="pause-screen" class="game-overlay hidden">
+        <div class="overlay-card pause-card">
+          <h2>TACTICAL PAUSE</h2>
+          <div class="pause-actions">
+            <button id="btn-resume" class="cyber-btn primary-btn">RESUME MISSION</button>
+            <button id="btn-restart-pause" class="cyber-btn secondary-btn">ABORT & RESTART</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Over Screen Overlay -->
+      <div id="gameover-screen" class="game-overlay hidden">
+        <div class="overlay-card gameover-card">
+          <div class="danger-header">CRITICAL DAMAGE SUSTAINED</div>
+          <h2 class="gameover-title">MISSION FAILED</h2>
+
+          <div class="stats-summary">
+            <div class="stat-box">
+              <span class="stat-label">FINAL SCORE</span>
+              <span id="final-score" class="stat-val font-mono">000000</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">SECTOR REACHED</span>
+              <span id="final-wave" class="stat-val">WAVE 01</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">MAX COMBO</span>
+              <span id="final-combo" class="stat-val">x1.0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">ACCURACY</span>
+              <span id="final-accuracy" class="stat-val">0%</span>
+            </div>
+          </div>
+
+          <div id="new-record-banner" class="record-banner hidden">★ NEW HIGH SCORE RECORDED ★</div>
+
+          <button id="btn-retry" class="cyber-btn primary-btn">
+            <span class="btn-text">REDEPLOY FIGHTER</span>
+            <span class="btn-glow"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Wave Complete Overlay Banner -->
+      <div id="wave-banner" class="wave-banner hidden">
+        <div class="wave-banner-content">
+          <div class="wave-banner-sub">HOSTILES ELIMINATED</div>
+          <div id="wave-banner-title" class="wave-banner-title">SECTOR 01 CLEARED</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Virtual Controls -->
+    <div id="mobile-controls" class="mobile-controls-panel">
+      <div class="touch-dpad">
+        <button id="touch-left" class="touch-btn" aria-label="Move Left">◀</button>
+        <button id="touch-right" class="touch-btn" aria-label="Move Right">▶</button>
+      </div>
+      <div class="touch-actions">
+        <button id="touch-special" class="touch-btn special-btn" aria-label="Special Ability">EMP</button>
+        <button id="touch-fire" class="touch-btn fire-btn" aria-label="Fire Weapon">FIRE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/entities.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
